@@ -23,7 +23,6 @@ var recLength = 0,
   sampleRate;
 
 this.onmessage = function(e){
-  console.log('onmessage');
   switch(e.data.command){
     case 'init':
       init(e.data.config);
@@ -47,7 +46,6 @@ this.onmessage = function(e){
 };
 
 function init(config){
-  console.log('init');
   sampleRate = config.sampleRate;
 }
 

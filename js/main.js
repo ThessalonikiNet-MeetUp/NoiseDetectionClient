@@ -19,13 +19,6 @@ var fs = require('fs');
     function submit(blob){
         console.log('blob:');
         console.log(blob);
-
-        // var fd = new FormData();
-        // fd.append('fname', 'test.wav');
-        // fd.append('data', blob);
-        var fileName = "test.wav";
-        saveAs(blob, fileName);
-        console.log('done');
     }
 
     function gotBuffers(buffers) {
@@ -33,7 +26,7 @@ var fs = require('fs');
     }
 
     function doneEncoding(blob) {
-        submit(blob);
+        //submit(blob);
     }
 
     window.btnRecordDown = function (e) {
@@ -71,7 +64,7 @@ var fs = require('fs');
     };
 
     function callbackReceivedAudioStream(stream) {
-
+        console.log('callbackReceivedAudioStream');
         inputPoint = audioContext.createGain();
 
         realAudioInput = audioContext.createMediaStreamSource(stream);
@@ -88,6 +81,33 @@ var fs = require('fs');
         zeroGain.gain.value = 0.0;
         inputPoint.connect( zeroGain );
         zeroGain.connect( audioContext.destination );
+
+        //Noise detection
+        javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+        javascriptNode.connect(audioContext.destination);
+
+        javascriptNode.onaudioprocess = function() {
+            // get the average, bincount is fftsize / 2
+            var array =  new Uint8Array(analyserNode.frequencyBinCount);
+            analyserNode.getByteFrequencyData(array);
+            var average = getAverageVolume(array)
+            console.log('average: ' + average);
+            if (average > 100){
+                //TODO
+            }
+        }
+ 
+        function getAverageVolume(array) {
+            var values = 0;
+            var average;
+            var length = array.length;
+            // get all the frequency amplitudes
+            for (var i = 0; i < length; i++) {
+                values += array[i];
+            }
+            average = values / length;
+            return average;
+        }
     };
 
     function initAudio() {

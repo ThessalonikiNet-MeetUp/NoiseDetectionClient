@@ -1,6 +1,6 @@
 var menubar = require('menubar')
 
-var opts = {dir: process.cwd(), webSecurity: false}
+var opts = {dir: process.cwd(), webSecurity: false, icon: process.cwd()+'/img/bot.png'}
 var mb = menubar(opts)
 
 mb.on('ready', function ready () {
