@@ -1,0 +1,44 @@
+<html>
+<head>
+  <!--<link rel="stylesheet" href="css/ratchet.css">-->
+  <style type="text/css">
+    /* overrides */
+    * { -webkit-user-select: none; }
+    .configure-content { bottom: 43px; }
+    .content .table-view { margin: 0 !important; }
+    .table-view-cell a:focus { background: rgba(0,0,0,.05);}
+    ul, code {font-size: 14px; color: #777;}
+    .badge { padding: 5px 8px; border-radius: 3px; }
+    .cursor-pointer { cursor: pointer; }
+  </style>
+  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/FileSaver.min.js"></script>
+
+  <script src="js/recorderjs/recorder.js"></script>
+  <script src="js/main.js"></script>
+
+  <script>if (window.module) module = window.module;</script>
+</head>
+<body>
+  <div id="container"></div>
+  <h3>NoiseDetection Device</h3>
+  <button id="btnRecord" 
+      class=" btn_mic 
+              btn 
+              btn-danger 
+              btn-large 
+              btnup"
+      type="button"
+      onmousedown="btnRecordDown(this)"
+      onmouseup="btnRecordUp(this)"
+      onmouseout="btnRecordOut(this)">
+  </button>
+  <div class="form-group" style="margin-top:30px;font-weight:400">
+  Hold the button to record. Release to end.<br/>
+  </div>
+  <!--<script src="configure.js"></script>-->
+</body>
+</html>
