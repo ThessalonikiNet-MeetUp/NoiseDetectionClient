@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 (function (window) {
 
     var isRecording = false;
@@ -18,10 +20,12 @@
         console.log('blob:');
         console.log(blob);
 
-        var fd = new FormData();
-        fd.append('fname', 'test.wav');
-        fd.append('data', blob);
-        ///TODO
+        // var fd = new FormData();
+        // fd.append('fname', 'test.wav');
+        // fd.append('data', blob);
+        var fileName = "test.wav";
+        saveAs(blob, fileName);
+        console.log('done');
     }
 
     function gotBuffers(buffers) {
