@@ -221,7 +221,7 @@ var fs = require('fs');
     }
 
     function loadConfiguration(callback) {
-        fs.readFile(__dirname + "\\config.json", 'utf8', function (err,data) {
+        fs.readFile(__dirname + "/config.json", 'utf8', function (err,data) {
             if (err) {
                 return console.log(err);
             }
@@ -231,7 +231,7 @@ var fs = require('fs');
     }
 
     function saveConfiguration(callback) {
-        fs.writeFile(__dirname + "\\config.json", JSON.stringify(configuration), function(err) {
+        fs.writeFile(__dirname + "/config.json", JSON.stringify(configuration), function(err) {
             if(err) {
                 return console.log(err);
             }
