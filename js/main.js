@@ -2,6 +2,14 @@ var fs = require('fs');
 
 (function (window) {
 
+    var configuration = {
+        deviceID: null,
+        decibelLevel: 100,
+        detectionCount: 100,
+        resetInterval: 5,
+        recording: false
+    }
+
     var isRecording = false;
     var btnRecord;
 
@@ -174,9 +182,91 @@ var fs = require('fs');
             });
     };
 
+    function initPage() {
+        console.log(configuration);
+
+        updateUI();
+        initConfigurationPage();
+        initStatusPage();
+
+    }
+
+    function updateUI() {
+        if(configuration.deviceID !== null) {
+            jQuery('#statuspanel').removeClass('hidden');
+            jQuery('#configurationpanel').addClass('hidden');
+        }
+        else {
+            jQuery('#configurationpanel').removeClass('hidden');
+            jQuery('#statuspanel').addClass('hidden');
+        }
+    }
+
+    function initConfigurationPage() {
+        jQuery('#configuration').submit(function (e) {
+            e.preventDefault();
+
+            jQuery('#deviceid').closest('.form-group').removeClass('has-error');
+
+            var deviceId = jQuery('#deviceid').val();
+
+            if (deviceId === null || deviceId === '' || isNaN(parseInt(deviceId, 10))) {
+                jQuery('#deviceid').closest('.form-group').addClass('has-error');
+                jQuery('#deviceid').focus();
+            }
+            else {
+                jQuery('#saveconfiguration').button('loading');
+                configuration.deviceID = parseInt(deviceId, 10);
+
+                saveConfiguration(function () {
+                    jQuery('#saveconfiguration').button('reset');
+                    jQuery('#configurationpanel').removeClass('panel-default').addClass('panel-success');
+
+                    updateUI();
+
+                });
+            }
+        });
+    }
+
+    function initStatusPage() {
+        jQuery('#status').submit(function (e) {
+            e.preventDefault();
+
+            jQuery('#togglestatus').button('loading');
+
+            setTimeout(function () {
+                jQuery('#togglestatus').button('reset');
+                jQuery('#togglestatus').toggleClass('btn-primary').toggleClass('btn-success');
+                
+                configuration.recording = jQuery('#togglestatus').hasClass('btn-success');
+
+                jQuery('#togglestatus').text(jQuery('#togglestatus').hasClass('btn-success') ? 'Stop recording' : 'Start recording');
+            }, 500);
+          
+        });
+    }
+
+    function loadConfiguration(callback) {
+
+    }
+
+    function saveConfiguration(callback) {
+        console.log(__dirname + "\\config.json");
+        fs.writeFile(__dirname + "\\config.json", JSON.stringify(configuration), function(err) {
+            if(err) {
+                return console.log(err);
+            }
+
+            console.log("The file was saved!");
+            callback();
+        }); 
+    }
 
     function main() {
         initAudio();
+
+        loadConfiguration(initPage);
     };
 
     window.addEventListener('load', main);

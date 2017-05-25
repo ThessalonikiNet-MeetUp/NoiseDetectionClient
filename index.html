@@ -22,7 +22,7 @@
         <h3>Welcome</h3>
         <div class="row">
             <div class="col-md-12">
-                <div id="configurationpanel" class="panel panel-default">
+                <div id="configurationpanel" class="panel panel-default hidden">
                     <div class="panel-heading">
                         Configuration
                         <span class="pull-right ndb-success-danger">Something's wrong.. :(</span>
@@ -41,8 +41,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12 hidden">
-                <div id="statuspanel" class="panel panel-default">
+            <div class="col-md-12">
+                <div id="statuspanel" class="panel panel-default hidden">
                     <div class="panel-heading">
                         Status
                     </div>
@@ -78,40 +78,5 @@
             </div>
         </div>
     </div>
-    <script>
-        // jQuery('#status').submit(function (e) {
-        //     e.preventDefault();
-
-        //     jQuery('#togglestatus').button('loading');
-
-        //     setTimeout(function () {
-        //         jQuery('#togglestatus').button('reset');
-        //         jQuery('#togglestatus').toggleClass('btn-primary').toggleClass('btn-success');
-
-        //         jQuery('#togglestatus').text(jQuery('#togglestatus').hasClass('btn-success') ? 'Stop recording' : 'Start recording');
-        //     }, 500);
-          
-        // });
-        jQuery('#configuration').submit(function (e) {
-            e.preventDefault();
-
-            jQuery('#deviceid').closest('.form-group').removeClass('has-error');
-
-            var deviceId = jQuery('#deviceid').val();
-
-            if (deviceId === null || deviceId === '') {
-                jQuery('#deviceid').closest('.form-group').addClass('has-error');
-                jQuery('#deviceid').focus();
-            }
-            else {
-                jQuery('#saveconfiguration').button('loading');
-
-                setTimeout(function () {
-                    jQuery('#saveconfiguration').button('reset');
-                    jQuery('#configurationpanel').removeClass('panel-default').addClass('panel-success');
-                }, 2000);
-            }
-        });
-    </script>
 </body>
 </html>

@@ -57,7 +57,7 @@
 }
 
 * {
-    font-family: 'Segoe UI';
+    font-family: 'Segoe UI', 'Helvetica', 'Arial';
 }
 
 div.panel:not(.panel-success) .ndb-success-message {display: none;}
