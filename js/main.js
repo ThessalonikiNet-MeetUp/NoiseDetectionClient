@@ -66,9 +66,6 @@ var fs = require('fs');
         $('#spinPhrase').css('visibility', 'visible');
         audioRecorder.stop();
         audioRecorder.getBuffers(gotBuffers);
-
-        // EVENTUALY, WE WILL DO THIS AT THE END:
-        // updateGrid();
     };
 
     function callbackReceivedAudioStream(stream) {
@@ -103,18 +100,7 @@ var fs = require('fs');
         gradient.addColorStop(0.75,'#ff0000');
         gradient.addColorStop(0.25,'#ffff00');
         gradient.addColorStop(0,'#ffffff');
-        // create a temp canvas we use for copying
-        // var tempCanvas = document.createElement("canvas"),
-        //     tempCtx = tempCanvas.getContext("2d");
-        // tempCanvas.width=800;
-        // tempCanvas.height=512;
-        // // used for color distribution
-        // var hot = new chroma.ColorScale({
-        //     colors:['#000000', '#ff0000', '#ffff00', '#ffffff'],
-        //     positions:[0, .25, .75, 1],
-        //     mode:'rgb',
-        //     limits:[0, 300]
-        // });
+
         javascriptNode.onaudioprocess = function() {
             
             // get the average, bincount is fftsize / 2
@@ -125,16 +111,13 @@ var fs = require('fs');
             //console.log('average: ' + average);
 
              // clear the current state
-            ctx.clearRect(0, 0, 60, 130);
-     
+            ctx.clearRect(0, 0, 60, 200);
             // set the fill style
             ctx.fillStyle=gradient;
-     
             // create the meters
-            //ctx.fillRect(0,130-average,25,130);
             drawSpectrum(array);
-            fd = JSON.stringify({"deviceID": configuration.deviceID, "noiseLevel":average});
 
+            // fire when threshold has been exceeded
             if (average > 70){
                 detectedCount++;
                 //console.log(detectedCount);
@@ -143,6 +126,7 @@ var fs = require('fs');
                     //console.log('init');
                 }
                 if (detectedCount > 100){
+                    fd = JSON.stringify({"deviceID": configuration.deviceID, "noiseLevel":average});
                     console.log('fire');
                       $.ajax({
                             type: 'POST',
@@ -188,34 +172,9 @@ var fs = require('fs');
         function drawSpectrum(array) {
         for ( var i = 0; i < (array.length); i++ ){
                 var value = array[i];
-                //ctx.fillRect(i*5,325-value,3,325);
-                ctx.fillRect(0,130-value,25,130);
+                ctx.fillRect(0,200-value,25,200);
             }
         };
-        // function drawSpectrogram(array) {
-            
-        //     // copy the current canvas onto the temp canvas
-        //     var canvas = document.getElementById("canvas");
-        //     tempCtx.drawImage(canvas, 0, 0, 800, 512);
-     
-        //     // iterate over the elements from the array
-        //     for (var i = 0; i < array.length; i++) {
-        //         // draw each pixel with the specific color
-        //         var value = array[i];
-        //         ctx.fillStyle = hot.getColor(value).hex();
-     
-        //         // draw the line at the right side of the canvas
-        //         ctx.fillRect(800 - 1, 512 - i, 1, 1);
-        //     }
-     
-        //     // set translate on the canvas
-        //     ctx.translate(-1, 0);
-        //     // draw the copied image
-        //     ctx.drawImage(tempCanvas, 0, 0, 800, 512, 0, 0, 800, 512);
-     
-        //     // reset the transformation matrix
-        //     ctx.setTransform(1, 0, 0, 1, 0, 0);
-        // }
     };
 
     function initAudio() {
