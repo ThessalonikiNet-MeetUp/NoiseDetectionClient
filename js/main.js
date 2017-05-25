@@ -72,7 +72,7 @@ var fs = require('fs');
         audioInput.connect(inputPoint);
 
         analyserNode = audioContext.createAnalyser();
-        analyserNode.fftSize = 2048;
+        analyserNode.fftSize = 1024;
         inputPoint.connect( analyserNode );
 
         audioRecorder = new Recorder( inputPoint );
@@ -83,17 +83,55 @@ var fs = require('fs');
         zeroGain.connect( audioContext.destination );
 
         //Noise detection
-        javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+        javascriptNode = audioContext.createScriptProcessor(1024, 1, 1);
         javascriptNode.connect(audioContext.destination);
+        var detectedCount = 0;
+        var startTime = null;
 
         javascriptNode.onaudioprocess = function() {
             // get the average, bincount is fftsize / 2
             var array =  new Uint8Array(analyserNode.frequencyBinCount);
             analyserNode.getByteFrequencyData(array);
             var average = getAverageVolume(array)
-            console.log('average: ' + average);
-            if (average > 100){
-                //TODO
+            //console.log('average: ' + average);
+            fd = JSON.stringify({"deviceID": "37", "noiseLevel":135.3});
+
+            if (average > 70){
+                detectedCount++;
+                //console.log(detectedCount);
+                if (detectedCount == 1){
+                    startTime = new Date();
+                    //console.log('init');
+                }
+                if (detectedCount > 100){
+                    console.log('fire');
+                      $.ajax({
+                            type: 'POST',
+                            url: ' https://noisedetectionfunctions.azurewebsites.net/api/AddEventHttpTrigger?code=eCFnaCPKSLtLwFhuLNdEpchsuJXZGosUzdw0AqTCedBXBa3Nh5Iw3Q==',
+                            data: fd,
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function(result){
+                                console.log('post result: ' + result);
+                            },
+                            error: function(e){
+                                console.log(e);
+                            }
+                        });
+                    detectedCount = 0;
+                }else{
+                    //console.log('lets wait and see');
+                }
+               
+            }else{
+                if (startTime){
+                    currentTime = new Date();
+                    if ((currentTime - startTime)/1000 > 3){
+                        detectedCount = 0;
+                        startTime = null;
+                        console.log('reset');
+                    }
+                }
             }
         }
  
