@@ -133,7 +133,6 @@ var fs = require('fs');
             // create the meters
             //ctx.fillRect(0,130-average,25,130);
             drawSpectrum(array);
-
             fd = JSON.stringify({"deviceID": configuration.deviceID, "noiseLevel":average});
 
             if (average > 70){
@@ -277,7 +276,7 @@ var fs = require('fs');
                     jQuery('#configurationpanel').removeClass('panel-default').addClass('panel-success');
 
                     updateUI();
-
+                    initAudio();
                 });
             }
         });
@@ -286,7 +285,7 @@ var fs = require('fs');
     function loadConfiguration(callback) {
         var path = __dirname + "/config.json";
         
-        if (!fs.existsSync(path)) { return; }
+        if (!fs.existsSync(path)) { callback(); return; }
 
         fs.readFile(path, 'utf8', function (err,data) {
             if (err) {
@@ -314,7 +313,11 @@ var fs = require('fs');
         
         loadConfiguration(function() {
             updateUI();
-            initAudio();
+
+            if(configuration.deviceID) {
+                initAudio();
+            }
+            
         });
     };
 
