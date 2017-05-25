@@ -118,14 +118,14 @@ var fs = require('fs');
             drawSpectrum(array);
 
             // fire when threshold has been exceeded
-            if (average > 70){
+            if (average > configuration.decibelLevel){
                 detectedCount++;
-                //console.log(detectedCount);
-                if (detectedCount == 1){
+                console.log('detectedCount', detectedCount, average);
+                if (detectedCount == 1) {
                     startTime = new Date();
                     //console.log('init');
                 }
-                if (detectedCount > configuration.decibelLevel){
+                if (detectedCount > 10){
                     fd = JSON.stringify({"deviceID": configuration.deviceID, "noiseLevel":average});
                     console.log('fire');
                       $.ajax({
