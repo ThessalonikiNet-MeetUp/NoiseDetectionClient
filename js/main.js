@@ -120,7 +120,7 @@ var fs = require('fs');
             // fire when threshold has been exceeded
             if (average > configuration.decibelLevel){
                 detectedCount++;
-                console.log('detectedCount', detectedCount, average);
+                // console.log('detectedCount', detectedCount, average);
                 if (detectedCount == 1) {
                     startTime = new Date();
                     //console.log('init');
@@ -128,19 +128,19 @@ var fs = require('fs');
                 if (detectedCount > 10){
                     fd = JSON.stringify({"deviceID": configuration.deviceID, "noiseLevel":average});
                     console.log('fire');
-                      $.ajax({
-                            type: 'POST',
-                            url: ' https://noisedetectionfunctions.azurewebsites.net/api/AddEventHttpTrigger?code=eCFnaCPKSLtLwFhuLNdEpchsuJXZGosUzdw0AqTCedBXBa3Nh5Iw3Q==',
-                            data: fd,
-                            dataType: "json",
-                            contentType: "application/json",
-                            success: function(result){
-                                console.log('post result: ' + result);
-                            },
-                            error: function(e){
-                                console.log(e);
-                            }
-                        });
+                    $.ajax({
+                        type: 'POST',
+                        url: ' https://noisedetectionfunctions.azurewebsites.net/api/AddEventHttpTrigger?code=eCFnaCPKSLtLwFhuLNdEpchsuJXZGosUzdw0AqTCedBXBa3Nh5Iw3Q==',
+                        data: fd,
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function(result){
+                            console.log('post result: ' + result);
+                        },
+                        error: function(e){
+                            console.log(e);
+                        }
+                    });
                     detectedCount = 0;
                 }else{
                     //console.log('lets wait and see');
