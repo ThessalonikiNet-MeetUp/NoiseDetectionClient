@@ -248,7 +248,7 @@ var fs = require('fs');
     }
 
     function loadConfiguration(callback) {
-
+        callback();
     }
 
     function saveConfiguration(callback) {
