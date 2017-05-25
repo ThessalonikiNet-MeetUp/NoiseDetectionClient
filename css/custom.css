@@ -55,3 +55,10 @@
     from { -webkit-transform: rotate(0deg);}
     to { -webkit-transform: rotate(360deg);}
 }
+
+* {
+    font-family: 'Segoe UI';
+}
+
+div.panel:not(.panel-success) .ndb-success-message {display: none;}
+div.panel:not(.panel-danger) .ndb-success-danger {display: none;}

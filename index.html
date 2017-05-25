@@ -1,46 +1,117 @@
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
-  <!--<link rel="stylesheet" href="css/ratchet.css">-->
-  <style type="text/css">
-    /* overrides */
-    * { -webkit-user-select: none; }
-    .configure-content { bottom: 43px; }
-    .content .table-view { margin: 0 !important; }
-    .table-view-cell a:focus { background: rgba(0,0,0,.05);}
-    ul, code {font-size: 14px; color: #777;}
-    .badge { padding: 5px 8px; border-radius: 3px; }
-    .cursor-pointer { cursor: pointer; }
-  </style>
-  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
 
-  <script src="js/jquery.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/FileSaver.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/FileSaver.min.js"></script>
 
-  <script src="js/recorderjs/recorder.js"></script>
-  <script src="js/main.js"></script>
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/custom.css">
+    <script src="js/recorderjs/recorder.js"></script>
+    <script src="js/main.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/custom.css">
 
-  <script>if (window.module) module = window.module;</script>
+    <script>if (window.module) module = window.module;</script>
 </head>
 <body>
-  <div id="container"></div>
-  <h3>NoiseDetection Device</h3>
-  <button id="btnRecord" 
-      class=" btn_mic 
-              btn 
-              btn-danger 
-              btn-large 
-              btnup"
-      type="button"
-      onmousedown="btnRecordDown(this)"
-      onmouseup="btnRecordUp(this)"
-      onmouseout="btnRecordOut(this)">
-  </button>
-  <div class="form-group" style="margin-top:30px;font-weight:400">
-  Hold the button to record. Release to end.<br/>
-  </div>
-  <!--<script src="configure.js"></script>-->
+    <div class="container-fluid">
+        <h3>Welcome</h3>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="configurationpanel" class="panel panel-default">
+                    <div class="panel-heading">
+                        Configuration
+                        <span class="pull-right ndb-success-danger">Something's wrong.. :(</span>
+                        <span class="pull-right ndb-success-message">All systems go!</span>
+                    </div>
+                    <div class="panel-body">
+                        <form id="configuration">
+                            <div class="form-group">
+                                <label for="deviceid" class="control-label">Provide the device ID</label>
+                                <input type="text" class="form-control" id="deviceid" name="deviceid" />
+                            </div>
+                            <div class="form-group">
+                                <button id="saveconfiguration" type="submit" class="btn btn-primary" data-loading-text="Saving...">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 hidden">
+                <div id="statuspanel" class="panel panel-default">
+                    <div class="panel-heading">
+                        Status
+                    </div>
+                    <div class="panel-body">
+                        <form id="status">
+                            <div class="form-group">
+                                <button id="togglestatus" type="submit" class="btn btn-primary" data-loading-text="Updating...">Start recording</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 hidden">
+                <div id="container"></div>
+                <h3>Testing Area!</h3>
+                <div>
+                    <button id="btnRecord"
+                            class=" btn_mic
+                            btn
+                            btn-danger
+                            btn-large
+                            btnup"
+                            type="button"
+                            onmousedown="btnRecordDown(this)"
+                            onmouseup="btnRecordUp(this)"
+                            onmouseout="btnRecordOut(this)"></button>
+                </div>
+                <hr />
+                <div class="well">
+                    Hold the button to record. Release to end.
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        // jQuery('#status').submit(function (e) {
+        //     e.preventDefault();
+
+        //     jQuery('#togglestatus').button('loading');
+
+        //     setTimeout(function () {
+        //         jQuery('#togglestatus').button('reset');
+        //         jQuery('#togglestatus').toggleClass('btn-primary').toggleClass('btn-success');
+
+        //         jQuery('#togglestatus').text(jQuery('#togglestatus').hasClass('btn-success') ? 'Stop recording' : 'Start recording');
+        //     }, 500);
+          
+        // });
+        jQuery('#configuration').submit(function (e) {
+            e.preventDefault();
+
+            jQuery('#deviceid').closest('.form-group').removeClass('has-error');
+
+            var deviceId = jQuery('#deviceid').val();
+
+            if (deviceId === null || deviceId === '') {
+                jQuery('#deviceid').closest('.form-group').addClass('has-error');
+                jQuery('#deviceid').focus();
+            }
+            else {
+                jQuery('#saveconfiguration').button('loading');
+
+                setTimeout(function () {
+                    jQuery('#saveconfiguration').button('reset');
+                    jQuery('#configurationpanel').removeClass('panel-default').addClass('panel-success');
+                }, 2000);
+            }
+        });
+    </script>
 </body>
 </html>
