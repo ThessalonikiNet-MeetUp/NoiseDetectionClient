@@ -10,6 +10,8 @@ var fs = require('fs');
         recording: false
     }
 
+    var lastFired = null;
+
     var isRecording = false;
     var btnRecord;
 
@@ -107,7 +109,8 @@ var fs = require('fs');
             var array =  new Uint8Array(analyserNode.frequencyBinCount);
             
             analyserNode.getByteFrequencyData(array);
-            var average = getAverageVolume(array)
+            var average = getAverageVolume(array);
+            
             //console.log('average: ' + average);
 
              // clear the current state
@@ -117,8 +120,15 @@ var fs = require('fs');
             // create the meters
             drawSpectrum(array);
 
+            // avoid sending too many requests to the bot
+            var now = new Date();
+            if(lastFired !== null && (now - lastFired) / 1000 > 15) {
+                lastFired = null;
+                console.log('unblocking');
+            }
+
             // fire when threshold has been exceeded
-            if (average > configuration.decibelLevel){
+            if (average > configuration.decibelLevel && lastFired == null) {
                 detectedCount++;
                 // console.log('detectedCount', detectedCount, average);
                 if (detectedCount == 1) {
@@ -128,6 +138,7 @@ var fs = require('fs');
                 if (detectedCount > 10){
                     fd = JSON.stringify({"deviceID": configuration.deviceID, "noiseLevel":average});
                     console.log('fire');
+                    lastFired = new Date();
                     $.ajax({
                         type: 'POST',
                         url: ' https://noisedetectionfunctions.azurewebsites.net/api/AddEventHttpTrigger?code=eCFnaCPKSLtLwFhuLNdEpchsuJXZGosUzdw0AqTCedBXBa3Nh5Iw3Q==',
@@ -139,6 +150,7 @@ var fs = require('fs');
                         },
                         error: function(e){
                             console.log(e);
+                            lastFired = null;
                         }
                     });
                     detectedCount = 0;
