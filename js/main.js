@@ -125,7 +125,7 @@ var fs = require('fs');
                     startTime = new Date();
                     //console.log('init');
                 }
-                if (detectedCount > 100){
+                if (detectedCount > configuration.decibelLevel){
                     fd = JSON.stringify({"deviceID": configuration.deviceID, "noiseLevel":average});
                     console.log('fire');
                       $.ajax({
@@ -219,8 +219,18 @@ var fs = require('fs');
             e.preventDefault();
 
             jQuery('#deviceid').closest('.form-group').removeClass('has-error');
+            jQuery('#decibellevel').closest('.form-group').removeClass('has-error');
 
             var deviceId = jQuery('#deviceid').val();
+            var decibelLevel = jQuery('#decibellevel').val();
+
+            if (decibelLevel === null || decibelLevel === '' || isNaN(parseInt(decibelLevel, 10))) {
+                console.log('using default decibelLevel');
+                configuration.decibelLevel = 80;
+
+            }else{
+                configuration.decibelLevel = parseInt(decibelLevel, 10);
+            }
 
             if (deviceId === null || deviceId === '' || isNaN(parseInt(deviceId, 10))) {
                 jQuery('#deviceid').closest('.form-group').addClass('has-error');
@@ -229,6 +239,7 @@ var fs = require('fs');
             else {
                 jQuery('#saveconfiguration').button('loading');
                 configuration.deviceID = parseInt(deviceId, 10);
+                
 
                 saveConfiguration(function () {
                     jQuery('#saveconfiguration').button('reset');
@@ -273,7 +284,7 @@ var fs = require('fs');
         loadConfiguration(function() {
             updateUI();
 
-            if(configuration.deviceID) {
+            if(configuration.deviceID && configuration.decibelLevel) {
                 initAudio();
             }
             
