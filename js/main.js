@@ -102,7 +102,7 @@ var fs = require('fs');
             analyserNode.getByteFrequencyData(array);
             var average = getAverageVolume(array)
             //console.log('average: ' + average);
-            fd = JSON.stringify({"deviceID": "37", "noiseLevel":135.3});
+            fd = JSON.stringify({"deviceID": configuration.deviceID, "noiseLevel":average});
 
             if (average > 70){
                 detectedCount++;
@@ -183,7 +183,6 @@ var fs = require('fs');
     };
 
     function initPage() {
-        console.log(configuration);
 
         updateUI();
         initConfigurationPage();
@@ -230,42 +229,31 @@ var fs = require('fs');
     }
 
     function initStatusPage() {
-        jQuery('#status').submit(function (e) {
-            e.preventDefault();
-
-            jQuery('#togglestatus').button('loading');
-
-            setTimeout(function () {
-                jQuery('#togglestatus').button('reset');
-                jQuery('#togglestatus').toggleClass('btn-primary').toggleClass('btn-success');
-                
-                configuration.recording = jQuery('#togglestatus').hasClass('btn-success');
-
-                jQuery('#togglestatus').text(jQuery('#togglestatus').hasClass('btn-success') ? 'Stop recording' : 'Start recording');
-            }, 500);
-          
-        });
+        console.log('initStatusPage')
+        initAudio();
     }
 
     function loadConfiguration(callback) {
-        callback();
+        fs.readFile(__dirname + "\\config.json", 'utf8', function (err,data) {
+            if (err) {
+                return console.log(err);
+            }
+            configuration = JSON.parse(data);
+            callback();
+        });
     }
 
     function saveConfiguration(callback) {
-        console.log(__dirname + "\\config.json");
         fs.writeFile(__dirname + "\\config.json", JSON.stringify(configuration), function(err) {
             if(err) {
                 return console.log(err);
             }
 
-            console.log("The file was saved!");
             callback();
         }); 
     }
 
     function main() {
-        initAudio();
-
         loadConfiguration(initPage);
     };
 
