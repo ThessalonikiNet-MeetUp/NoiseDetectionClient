@@ -101,7 +101,7 @@ var fs = require('fs');
             var array =  new Uint8Array(analyserNode.frequencyBinCount);
             analyserNode.getByteFrequencyData(array);
             var average = getAverageVolume(array)
-            console.log('average: ' + average);
+            //console.log('average: ' + average);
             fd = JSON.stringify({"deviceID": configuration.deviceID, "noiseLevel":average});
 
             if (average > 70){
@@ -214,7 +214,7 @@ var fs = require('fs');
                     jQuery('#configurationpanel').removeClass('panel-default').addClass('panel-success');
 
                     updateUI();
-
+                    initAudio();
                 });
             }
         });
@@ -223,7 +223,7 @@ var fs = require('fs');
     function loadConfiguration(callback) {
         var path = __dirname + "/config.json";
         
-        if (!fs.existsSync(path)) { return; }
+        if (!fs.existsSync(path)) { callback(); return; }
 
         fs.readFile(path, 'utf8', function (err,data) {
             if (err) {
@@ -251,7 +251,11 @@ var fs = require('fs');
         
         loadConfiguration(function() {
             updateUI();
-            initAudio();
+
+            if(configuration.deviceID) {
+                initAudio();
+            }
+            
         });
     };
 
