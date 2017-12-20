@@ -6,83 +6,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/FileSaver.min.js"></script>
+    <script src="assets/jquery/jquery.min.js"></script>
+    <script src="assets/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 
-    <script src="js/recorderjs/recorder.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/chroma.js"></script>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/custom.css">
+    <script src="assets/recorderjs/recorder.js"></script>
+    <script src="assets/ndb/js/main.js"></script>
+    <link rel="stylesheet" href="assets/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/ndb/css/custom.css">
 
     <script>if (window.module) module = window.module;</script>
 </head>
 <body>
     <div class="container-fluid">
-        <h3>Welcome</h3>
-        <div class="row">
-            <div class="col-md-12">
-                <div id="configurationpanel" class="panel panel-default hidden">
-                    <div class="panel-heading">
-                        Configuration
-                        <span class="pull-right ndb-success-danger">Something's wrong.. :(</span>
-                        <span class="pull-right ndb-success-message">All systems go!</span>
-                    </div>
-                    <div class="panel-body">
-                        <form id="configuration">
-                            <div class="form-group">
-                                <label for="deviceid" class="control-label">Device ID</label>
-                                <input type="text" class="form-control" id="deviceid" name="deviceid" />
-                                <label for="decibellevel" class="control-label">Decibel Level</label>
-                                <input type="text" class="form-control" id="decibellevel" name="decibellevel" />
-                            </div>
-                            <div class="form-group">
-                                <button id="saveconfiguration" type="submit" class="btn btn-primary" data-loading-text="Saving...">Save</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div id="statuspanel" class="panel panel-success hidden">
-                    <div class="panel-heading">
-                        All Set!
-                    </div>
-                    <div class="panel-body">
-                        <form id="status">
-                            <div class="form-group">
-                                <p class="help-block">
-                                    <b>Beware of the bot!</b><br />The app is now monitoring audio levels
-                                </p>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="panel-body">
-                        <canvas id="canvas" width="150" height="150" style="display: block; background-color:white ;"></canvas>
+        <h3>
+            Welcome
+            <button id="exit" type="button" class="btn btn-link btn-xs pull-right" title="Exit"><i class="glyphicon glyphicon-log-out"></i></button>
+        </h3>
+        <div>
+            <ul id="clientTabs" class="nav nav-tabs" role="tablist">
+                <li role="presentation"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
+                <li role="presentation"><a href="#configuration" aria-controls="profile" role="tab" data-toggle="tab">Configuration</a></li>
+                <li role="presentation"><a href="#about" aria-controls="messages" role="tab" data-toggle="tab">About</a></li>
+            </ul>   
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane" id="home">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            All Set!
+                        </div>
+                        <div class="panel-body">
+                            <form id="status">
+                                <div class="form-group">
+                                    <p class="help-block">
+                                        <b>Beware of the bot!</b><br />The app is now monitoring audio levels
+                                    </p>
+                                    <p>
+                                        <span id="levels" class="label label-info"></span>
+                                    </p>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="panel-body">
+                            <canvas id="canvas" width="300" height="150" style="display: block; background-color:white ;"></canvas>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-12 hidden">
-                <div id="container"></div>
-                <h3>Testing Area!</h3>
-                <div>
-                    <button id="btnRecord"
-                            class=" btn_mic
-                            btn
-                            btn-danger
-                            btn-large
-                            btnup"
-                            type="button"
-                            onmousedown="btnRecordDown(this)"
-                            onmouseup="btnRecordUp(this)"
-                            onmouseout="btnRecordOut(this)"></button>
+                <div role="tabpanel" class="tab-pane" id="configuration">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Configuration
+                        </div>
+                        <div class="panel-body">
+                            <form id="configuration">
+                                <div class="form-group">
+                                    <label for="deviceid" class="control-label">Device ID</label>
+                                    <input type="text" class="form-control" id="deviceid" name="deviceid" />
+                                    <label for="decibellevel" class="control-label">Decibel Level</label>
+                                    <input type="text" class="form-control" id="decibellevel" name="decibellevel" />
+                                </div>
+                                <div class="form-group">
+                                    <button id="saveconfiguration" type="submit" class="btn btn-primary" data-loading-text="Saving...">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <hr />
-                <div class="well">
-                    Hold the button to record. Release to end.
+                <div role="tabpanel" class="tab-pane" id="about">
+                    Some notes about this project
                 </div>
-
             </div>
         </div>
     </div>

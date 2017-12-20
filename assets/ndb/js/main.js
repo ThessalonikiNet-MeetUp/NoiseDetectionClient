@@ -2,18 +2,18 @@ var fs = require('fs');
 
 (function (window) {
 
+    const remote = require('electron').remote; 
+
     var configuration = {
         deviceID: null,
         decibelLevel: 100,
         detectionCount: 100,
         resetInterval: 5,
-        recording: false
+        recording: false,
+        azureEndpoint: ''
     }
 
     var lastFired = null;
-
-    var isRecording = false;
-    var btnRecord;
 
     // AUDIO FUNCTIONS
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -23,54 +23,10 @@ var fs = require('fs');
     var audioInput = null,
         realAudioInput = null,
         inputPoint = null,
-        audioRecorder = null;
-    var analyserContext = null;
+        audioRecorder = null,
+        analyserContext = null;
 
-    function submit(blob){
-        console.log('blob:');
-        console.log(blob);
-    }
-
-    function gotBuffers(buffers) {
-        audioRecorder.exportWAV(doneEncoding);
-    }
-
-    function doneEncoding(blob) {
-        //submit(blob);
-    }
-
-    window.btnRecordDown = function (e) {
-        $('#btnRecord').removeClass('btnup').addClass('btndown');
-        $('#spinIntent').css('visibility', 'hidden');
-        $('#spinPhrase').css('visibility', 'hidden');
-        $("#txtPhrase").val("");
-        $("#txtIntent").val("");
-
-        // START CLIENT SIDE AUDIO RECORDING PROCESS
-        if (!audioRecorder) return;
-        audioRecorder.clear();
-        audioRecorder.record();
-
-        isRecording = true;
-    };
-
-    window.btnRecordOut = function (e) {
-        if (isRecording)
-            btnRecordUp(e);
-    }
-
-    window.btnRecordUp = function (e) {
-        alert("btnRecordUp");
-        
-        isRecording = false;
-        $('#btnRecord').removeClass('btndown').addClass('btnup');
-
-        $('#spinPhrase').css('visibility', 'visible');
-        audioRecorder.stop();
-        audioRecorder.getBuffers(gotBuffers);
-    };
-
-    function callbackReceivedAudioStream(stream) {
+    var callbackReceivedAudioStream = function(stream) {
         console.log('callbackReceivedAudioStream');
         inputPoint = audioContext.createGain();
 
@@ -127,6 +83,8 @@ var fs = require('fs');
                 console.log('unblocking');
             }
 
+            jQuery('#levels').text(average);
+
             // fire when threshold has been exceeded
             if (average > configuration.decibelLevel && lastFired == null) {
                 detectedCount++;
@@ -135,13 +93,13 @@ var fs = require('fs');
                     startTime = new Date();
                     //console.log('init');
                 }
-                if (detectedCount > 10){
+                if (detectedCount > 10) {
                     fd = JSON.stringify({"deviceID": configuration.deviceID, "noiseLevel":average});
                     console.log('fire');
                     lastFired = new Date();
                     $.ajax({
                         type: 'POST',
-                        url: ' https://noisedetectionfunctions.azurewebsites.net/api/AddEventHttpTrigger?code=eCFnaCPKSLtLwFhuLNdEpchsuJXZGosUzdw0AqTCedBXBa3Nh5Iw3Q==',
+                        url: configuration.azureEndpoint,
                         data: fd,
                         dataType: "json",
                         contentType: "application/json",
@@ -189,8 +147,8 @@ var fs = require('fs');
         };
     };
 
-    function initAudio() {
-
+    var initAudio = function() {
+        console.log('initAudio');
         if (!navigator.getUserMedia)
             navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
         if (!navigator.cancelAnimationFrame)
@@ -215,18 +173,31 @@ var fs = require('fs');
             });
     };
 
-    function updateUI() {
-        if(configuration.deviceID !== null) {
-            jQuery('#statuspanel').removeClass('hidden');
-            jQuery('#configurationpanel').addClass('hidden');
-        }
-        else {
-            jQuery('#configurationpanel').removeClass('hidden');
-            jQuery('#statuspanel').addClass('hidden');
-        }
-    }
+    var initUI = function() {
+        console.log('initUI');
 
-    function initConfigurationPage() {
+        initApp();
+        initConfigurationPage();
+    };
+
+    var initApp = function() {
+        console.log('initApp');
+        
+        jQuery('#exit').click(function(e) {
+            e.preventDefault();
+            const window = remote.getCurrentWindow();
+            window.close();
+        });
+
+        jQuery('#clientTabs a:first').tab('show');
+    };
+
+    var initConfigurationPage = function() {
+        console.log('initConfigurationPage');
+        
+        jQuery('#deviceid').val(configuration.deviceID);
+        jQuery('#decibellevel').val(configuration.decibelLevel);
+
         jQuery('#configuration').submit(function (e) {
             e.preventDefault();
 
@@ -240,7 +211,8 @@ var fs = require('fs');
                 console.log('using default decibelLevel');
                 configuration.decibelLevel = 80;
 
-            }else{
+            }
+            else {
                 configuration.decibelLevel = parseInt(decibelLevel, 10);
             }
 
@@ -251,34 +223,32 @@ var fs = require('fs');
             else {
                 jQuery('#saveconfiguration').button('loading');
                 configuration.deviceID = parseInt(deviceId, 10);
-                
 
                 saveConfiguration(function () {
                     jQuery('#saveconfiguration').button('reset');
                     jQuery('#configurationpanel').removeClass('panel-default').addClass('panel-success');
-
-                    updateUI();
-                    initAudio();
                 });
             }
         });
     }
 
-    function loadConfiguration(callback) {
+    var loadConfiguration = function(callback) {
+        console.log('loadConfiguration');
         var path = __dirname + "/config.json";
         
-        if (!fs.existsSync(path)) { callback(); return; }
+        if (!fs.existsSync(path)) { callback && callback(); return; }
 
         fs.readFile(path, 'utf8', function (err,data) {
             if (err) {
                 return console.log(err);
             }
             configuration = JSON.parse(data);
-            callback();
+            callback && callback();
         });
     }
 
-    function saveConfiguration(callback) {
+    var saveConfiguration = function(callback) {
+        console.log('saveConfiguration');
         var path = __dirname + "/config.json";
         
         fs.writeFile(path, JSON.stringify(configuration), function(err) {
@@ -286,21 +256,22 @@ var fs = require('fs');
                 return console.log(err);
             }
 
-            callback();
+            callback && callback();
         }); 
     }
 
-    function main() {
-        initConfigurationPage();
-        
-        loadConfiguration(function() {
-            updateUI();
+    var main = function () {
+        console.log('main')
 
-            if(configuration.deviceID && configuration.decibelLevel) {
-                initAudio();
-            }
-            
-        });
+        var loadConfigurationCallback = function() {
+            console.log('loadConfigurationCallback');
+
+            initUI();
+            initAudio();
+        };
+        
+        loadConfiguration(loadConfigurationCallback);
+
     };
 
     window.addEventListener('load', main);
